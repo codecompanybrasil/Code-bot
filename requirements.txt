@@ -1,0 +1,7 @@
+discord
+requests
+beautifulsoup4
+python-dotenv
+mysql
+mysql-connector-python
+asyncio
