@@ -9,7 +9,6 @@ from random import randint
 #from executor import Executor
 #from freelancer import Scrapper
 from utils import Utils
-from questionary import Questionary
 from verifications import Verifications
 from commandos import bot as pessoa
 from methods import Methods
@@ -19,7 +18,6 @@ load_dotenv()
 connector = Connection()
 #comandos = Comandos(pessoa=pessoa)
 utils = Utils(pessoa=pessoa)
-questionary = Questionary()
 verification = Verifications(pessoa=pessoa)
 
 #executor = Executor(pessoa=pessoa)
@@ -73,7 +71,7 @@ Antes de começar sujiro que responda o chat de cargos dentro da comunidade, par
 ''',
         color=discord.Color.blue()
     )
-    embed.add_field(name="Como funciona o sistema de Bucks?", value="", inline=False)
+    #embed.add_field(name="Como funciona o sistema de Bucks?", value="", inline=False)
     embed.add_field(name="OBS...", value="caso você saia da comunidade, seus buscks e perfil continuarão salvo em até 7 dias! Se não retornar dentro do prazo, sua conta será perdida.", inline=False)
 
     await utils.sendMensagemBoasVindasDm(member)
@@ -109,61 +107,61 @@ async def on_voice_state_update(member, before, after):
         if await connector.existEvent(idChannel):
             await connector.addParticipanteEvent(member.id, idChannel)
 
-@pessoa.event
-async def on_raw_reaction_remove(payload):
-    server = pessoa.get_guild(1007633662847762503)
+# @pessoa.event
+# async def on_raw_reaction_remove(payload):
+#     server = pessoa.get_guild(1007633662847762503)
     
-    cargo = await verification.onEmojiReact(payload.emoji.name, server, utils.cargoList)
-    if payload.message_id == 1011466075143163914: #Mensagem emprego
-        if cargo == True:
-            cargo = server.get_role(1007917610727387176)
+#     cargo = await verification.onEmojiReact(payload.emoji.name, server, utils.cargoList)
+#     if payload.message_id == 1011466075143163914: #Mensagem emprego
+#         if cargo == True:
+#             cargo = server.get_role(1007917610727387176)
             
-    elif payload.message_id == 1011466741454475315: #Mensagem Profissionais
-        if cargo == True:
-            cargo = server.get_role(1011458921120153620)
+#     elif payload.message_id == 1011466741454475315: #Mensagem Profissionais
+#         if cargo == True:
+#             cargo = server.get_role(1011458921120153620)
     
-    if cargo and type(cargo) != bool:
-        membro = server.get_member(payload.user_id)
-        await membro.remove_roles(cargo)
+#     if cargo and type(cargo) != bool:
+#         membro = server.get_member(payload.user_id)
+#         await membro.remove_roles(cargo)
     
 @pessoa.event
 async def on_raw_reaction_add(payload):
-    for c in await questionary.getChannels():
-        c = c[0]
-        member = pessoa.get_user(payload.user_id)
-        if payload.channel_id == c and not member.bot:
-            await questionary.recibeResponse(payload, c, pessoa=pessoa, channel=pessoa.get_channel(payload.channel_id))
+    # for c in await questionary.getChannels():
+    #     c = c[0]
+    #     member = pessoa.get_user(payload.user_id)
+    #     if payload.channel_id == c and not member.bot:
+    #         await questionary.recibeResponse(payload, c, pessoa=pessoa, channel=pessoa.get_channel(payload.channel_id))
 
-    if payload.channel_id == int(os.environ["FREELANCER_CHANNEL"]) and payload.user_id != int(os.environ["FREELANCER_BOT_ID"]) and payload.user_id != 1008576934445322270 and payload.emoji.name == "freelancer_icon":
-        channel = pessoa.get_channel(payload.channel_id)
-        guild = pessoa.get_guild(1007633662847762503)
-        member = guild.get_member(payload.user_id)
-        dmId = await connector.getDmChannel(payload.user_id)
-        if not dmId:
-            overwrite = {
-                guild.get_member(member.id): discord.PermissionOverwrite(read_messages=True),
-                guild.default_role: discord.PermissionOverwrite(read_messages=False, view_channel=False)
-            }
-            private = await guild.create_text_channel(member.name, position=2, reason="canal pessoal para envio de dados do job", overwrites=overwrite, default_auto_archive_duration=60)
-            await private.send(f":bell: {member.mention} :bell:")
-            await private.send("O canal se encerra sozinho em 10 minutos. Responda as perguntas dentro desse tempo!")
-            await connector.setDmChannel(payload.user_id, private.id, f"{member.name}#{member.discriminator}", await utils.dateAtual())
-            try:
-                idNotifyJob = await connector.getIdNotifyJobs(payload.message_id)
-            except:
-                await private.send("Desculpe, ocorreu um erro no servidor do discord. Reaga a mensagem de novo!")
-                await questionary.closeCanal(private.id, pessoa)
-            freelancer_channel = pessoa.get_channel(int(os.environ["FREELANCER_CHANNEL"]))
-            message = await freelancer_channel.fetch_message(payload.message_id) #a mesagem específica
-            notifyJob = await connector.getNotifyJobs(idNotifyJob)
-            notifyJob = list(notifyJob)
-            del notifyJob[0]
-            await connector.updateUserNotifyJob(payload.user_id, notifyJob)
-            await questionary.startQuestion(private.id, "interessadoJob", idNotifyJob=idNotifyJob, pessoa=pessoa, channel=private, idUser=payload.user_id, message=message)
-        else:
-            dm = pessoa.get_channel(dmId)
-            await dm.send(f":bell: {member.mention} :bell:")
-            await channel.send(f"{member.name} já tem um canal bacanudo")
+    # if payload.channel_id == int(os.environ["FREELANCER_CHANNEL"]) and payload.user_id != int(os.environ["FREELANCER_BOT_ID"]) and payload.user_id != 1008576934445322270 and payload.emoji.name == "freelancer_icon":
+    #     channel = pessoa.get_channel(payload.channel_id)
+    #     guild = pessoa.get_guild(1007633662847762503)
+    #     member = guild.get_member(payload.user_id)
+    #     dmId = await connector.getDmChannel(payload.user_id)
+    #     if not dmId:
+    #         overwrite = {
+    #             guild.get_member(member.id): discord.PermissionOverwrite(read_messages=True),
+    #             guild.default_role: discord.PermissionOverwrite(read_messages=False, view_channel=False)
+    #         }
+    #         private = await guild.create_text_channel(member.name, position=2, reason="canal pessoal para envio de dados do job", overwrites=overwrite, default_auto_archive_duration=60)
+    #         await private.send(f":bell: {member.mention} :bell:")
+    #         await private.send("O canal se encerra sozinho em 10 minutos. Responda as perguntas dentro desse tempo!")
+    #         await connector.setDmChannel(payload.user_id, private.id, f"{member.name}#{member.discriminator}", await utils.dateAtual())
+    #         try:
+    #             idNotifyJob = await connector.getIdNotifyJobs(payload.message_id)
+    #         except:
+    #             await private.send("Desculpe, ocorreu um erro no servidor do discord. Reaga a mensagem de novo!")
+    #             await questionary.closeCanal(private.id, pessoa)
+    #         freelancer_channel = pessoa.get_channel(int(os.environ["FREELANCER_CHANNEL"]))
+    #         message = await freelancer_channel.fetch_message(payload.message_id) #a mesagem específica
+    #         notifyJob = await connector.getNotifyJobs(idNotifyJob)
+    #         notifyJob = list(notifyJob)
+    #         del notifyJob[0]
+    #         await connector.updateUserNotifyJob(payload.user_id, notifyJob)
+    #         await questionary.startQuestion(private.id, "interessadoJob", idNotifyJob=idNotifyJob, pessoa=pessoa, channel=private, idUser=payload.user_id, message=message)
+    #     else:
+    #         dm = pessoa.get_channel(dmId)
+    #         await dm.send(f":bell: {member.mention} :bell:")
+    #         await channel.send(f"{member.name} já tem um canal bacanudo")
         
     #Teste para saber se é uma mensagem do chat de projetos!
     for idMensagemProjeto in await connector.getIdMensagensProjetos():
@@ -178,41 +176,34 @@ async def on_raw_reaction_add(payload):
             await mensagem.remove_reaction(payload.emoji, user)#emoji, member
             await channel.send(content)
 
-@pessoa.event
-async def on_app_command_completion(interaction, command):
-    print("Comando enviado")
+# @pessoa.event
+# async def on_message(message):
+#     Se for resposta de questionario direciona
+#     for c in await questionary.getChannels():
+#         c = c[0]
+#         if message.channel.id == c and not message.author.bot:
+#             await questionary.recibeResponse(message, c, pessoa=pessoa, channel=message.channel)
+#         if message.author.id == c:
+#             await questionary.recibeResponse(message, c, pessoa=pessoa, channel=message.channel)
 
-@pessoa.event
-async def on_message(message):
-    #Se for resposta de questionario direciona
-    for c in await questionary.getChannels():
-        c = c[0]
-        if message.channel.id == c and not message.author.bot:
-            await questionary.recibeResponse(message, c, pessoa=pessoa, channel=message.channel)
-        if message.author.id == c:
-            await questionary.recibeResponse(message, c, pessoa=pessoa, channel=message.channel)
-
-    #Se for comandos executa
+#     Se for comandos executa
     
-    # for c in list(comandos.commandos.keys()):
-    #     if str(c) in message.content:
-    #         try:
-    #             await message.delete()
-    #         except:
-    #             pass
-    #         callback = comandos.commandos[c]["callback"]
-    #         if comandos.commandos[c]["admin"]:
-    #             if await connector.isAdmin(int(message.author.id)):
-    #                 await callback(message, pessoa)
-    #             else:
-    #                 await message.channel.send("Você não tem permissões administradoras para executar esse comando!")
-    #         else:
-    #             await callback(message, pessoa) 
+#     for c in list(comandos.commandos.keys()):
+#         if str(c) in message.content:
+#             try:
+#                 await message.delete()
+#             except:
+#                 pass
+#             callback = comandos.commandos[c]["callback"]
+#             if comandos.commandos[c]["admin"]:
+#                 if await connector.isAdmin(int(message.author.id)):
+#                     await callback(message, pessoa)
+#                 else:
+#                     await message.channel.send("Você não tem permissões administradoras para executar esse comando!")
+#             else:
+#                 await callback(message, pessoa) 
     
-    #Verifications
-    #await verification.bumpVerification(message)
-    if not message.author.bot:
-        await verification.diaryMessageVerification(message)
-        await verification.boostMessageVerification(message)
+#     Verifications
+#     await verification.bumpVerification(message)
 
 pessoa.run(str(os.environ["TOKEN"]))

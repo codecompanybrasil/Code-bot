@@ -177,8 +177,6 @@ async def profile(interaction: discord.Interaction, id: str = ""):
     else:
         authorId = interaction.user.id
     print(authorId)
-    pontos = await connector.getPontos(authorId)
-    await utils.checkingRanking(pontos, authorId)
 
     perfil = await connector.getProfile(authorId)
     if perfil:
@@ -194,8 +192,8 @@ async def profile(interaction: discord.Interaction, id: str = ""):
             color=discord.Color.dark_blue()
         )
         embed.add_field(name="Nome", value=f"{perfil[2]}#{perfil[3]}", inline=False)
-        embed.add_field(name="Bucks", value=f"🪙 {perfil[1]} bucks", inline=False)
-        embed.add_field(name="Ranking", value=f"🏅 {r}", inline=False)
+        #embed.add_field(name="Bucks", value=f"🪙 {perfil[1]} bucks", inline=False)
+        # embed.add_field(name="Ranking", value=f"🏅 {r}", inline=False)
         embed.add_field(name="ID", value=perfil[0], inline=False)
         embed.add_field(name="Membro desde", value=str(member.joined_at).split(" ")[0], inline=False)
         embed.set_thumbnail(url=avatar_url)

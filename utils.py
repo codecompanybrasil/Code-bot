@@ -21,14 +21,6 @@ class Utils:
             }
         }
         
-        '''
-        N_INICIANTE=0
-N_GAFANHOTO=150
-N_JUNIOR=300
-N_PLENO=500
-N_SENIOR=700
-N_WEBMASTER=1000
-        '''
         self.ranking = {
             "N_INICIANTE": 'i',
             "N_GAFANHOTO": 'g',

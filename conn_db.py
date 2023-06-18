@@ -29,7 +29,7 @@ class Connection:
     
     async def gettingChannelFreelanceByClient(self, client):
         await self.connect()
-        self.cursor.execute(f"SELECT idChannel FROM jobs WHERE client = '{self.bind_sqli(client)}'")
+        self.cursor.execute(f"SELECT idChannel FROM jobs WHERE client = 'pontos{self.bind_sqli(client)}'")
 
     async def getFlag(self, nomeUs):
         await self.connect()
