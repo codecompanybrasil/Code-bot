@@ -25,6 +25,18 @@ class Auxiliar:
         if data:
             return True
         return False
+    
+    async def isAdminWithMessage(self, message: discord.Message, notReturn=False):
+        idUser = int(message.author.id)
+        await self.connector.connect()
+        self.connector.cursor.execute(f"SELECT * FROM admin WHERE id = {idUser};")
+        data = self.connector.cursor.fetchone()
+        if not notReturn and not data:
+            return await message.channel.send(f"{message.author.mention} não tem permissões administradoras para esse comando")
+        
+        if data:
+            return True
+        return False
 
     async def isLiderDeProjeto(self, idUser):
         await self.connector.connect()
@@ -380,22 +392,48 @@ async def move(interaction: discord.Interaction, call: str, destino: str):
             await member.move_to(c2)
         await interaction.followup.send("Membros movidos", ephemeral=True)
 
-@bot.tree.command(name="clean", description="Apaga todas as mensagens do canal  //ADM")
-@discord.app_commands.describe(id="ID do canal")
-async def clean(interaction: discord.Interaction, id: str=""):
+@bot.tree.command(name="clean", description="Discord não apaga sapora")
+async def clean(interaction: discord.Interaction):
+    print("\n\nComando Clean\n\n")
+    channel = bot.get_channel(int(interaction.channel.id))
+    await channel.send("DISCORD TA UM CU HOJE")
+
+@bot.tree.command(name="doclean", description="Apaga mensagens no canal  //ADM")
+@discord.app_commands.describe(id="ID do canal", limit="Limite para apagar mensagens", msgInicio="ID da primeira mensagem", msgFinal="ID da ultima mensagem")
+async def doclean(interaction: discord.Interaction, id: str="", limit: int=0, msgInicio: str="0", msgFinal: str="0"):
+    #Seta o starter do inicio
+    if msgInicio:
+        starter = False
+    else:
+        starter = True
+    
+    
     await interaction.response.defer(ephemeral=True)
     
     if await auxiliar.isAdmin(interaction):
+        #Pega o canal
         if id:
             if not await auxiliar.testingIntParam(interaction, id):
                 return False
             channel = bot.get_channel(int(id))
         else:
             channel = bot.get_channel(int(interaction.channel.id))
-        #while channel.history() != []:
+        
+        
         try:
             async for message in channel.history():
-                await message.delete()
+                if starter:
+                    if int(msgFinal) == message.id:
+                        break
+                    
+                    if limit > 0:
+                        await message.delete()
+                        limit -= 1
+                    else:
+                        break
+                else:
+                    if int(msgInicio) == message.id:
+                        starter = True
         except Exception as erro:
             raise erro
         await interaction.followup.send("Canal limpo!", ephemeral=True)
