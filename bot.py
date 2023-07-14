@@ -144,7 +144,13 @@ async def on_message(message):
         msgInicio = args.mI if args.mI != None else 0
         msgFinal = args.mF if args.mF != None else 0
         limit = args.l if args.l != None else 99
-
+        
+        #Pega o canal
+        if id:
+            channel = bot.get_channel(int(id))
+        else:
+            channel = bot.get_channel(int(message.channel.id))
+        
         #Seta o starter do inicio
         if msgInicio:
             starter = False
@@ -152,16 +158,10 @@ async def on_message(message):
             starter = True
         
         
-        if await auxiliar.isAdminWithMessage(message=message):
-            #Pega o canal
-            if id:
-                channel = bot.get_channel(int(id))
-            else:
-                channel = bot.get_channel(int(message.channel.id))
-            
+        if await auxiliar.isAdminWithMessage(message=message):  
             
             try:
-                async for msg in channel.history():
+                async for msg in channel.history(limit=None):
                     if starter:
                         if int(msgFinal) == msg.id:
                             break
