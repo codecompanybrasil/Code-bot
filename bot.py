@@ -183,7 +183,8 @@ async def on_message(message):
                 except:
                     pass
                 
-                await message.channel.send("Canal limpo!")
+                canal_limpo = await message.channel.send("Canal limpo!")
                 await asyncio.sleep(3)
+                await canal_limpo.delete()
 
 bot.run(str(os.environ["TOKEN"]))
