@@ -186,5 +186,85 @@ async def on_message(message):
                 canal_limpo = await message.channel.send("Canal limpo!")
                 await asyncio.sleep(3)
                 await canal_limpo.delete()
+    
+    
+    elif "!topico" in message.content[0:7]:
+        parser = argparse.ArgumentParser()
+
+        parser.add_argument('-mI', type=int, help='Mensagem inicial')
+        parser.add_argument('-mF', type=int, help='Mensagem final')
+        parser.add_argument('-id', type=int, help='ID do thread')
+        parser.add_argument('-idC', type=int, help='ID do canal')
+        parser.add_argument('-l', type=int, help='Contagem de mensagens')
+
+        command_split = shlex.split(message.content)
+
+        # Analise a lista de palavras
+        args = parser.parse_args(command_split[1:])
+
+        id = args.idC
+        threadId = args.id
+        msgInicio = args.mI if args.mI != None else 0
+        msgFinal = args.mF if args.mF != None else 0
+        limit = args.l if args.l != None else 99
+        
+        #Pega o canal
+        if id:
+            channel = bot.get_channel(int(id))
+        else:
+            channel = bot.get_channel(int(message.channel.id))
+            
+        #Pega o ID do thread.
+        if threadId:
+            thread = channel.get_thread(threadId)
+        else:
+            m = await channel.send("Sem o ID do thread :(")
+            await asyncio.sleep(2)
+            return await m.delete()
+        
+        #Seta o starter do inicio
+        if msgInicio:
+            starter = False
+        else:
+            # starter = True
+            m = await channel.send("Sem a mensagem inicial :(")
+            await asyncio.sleep(2)
+            return await m.delete()
+        
+        
+        if await auxiliar.isAdminWithMessage(message=message):  
+            try:
+                await message.delete()
+            except:
+                pass
+                
+            try:
+                async for msg in channel.history(limit=None, oldest_first=True):
+                    if starter:
+                        if int(msgFinal) == msg.id:
+                            break
+                        
+                        if limit > 0 or limit == 99:
+                            attachments = []
+                            new_msg = f"**{msg.author.display_name}:**\n\n{msg.content}"
+                            if msg.attachments:
+                                for attachment in msg.attachments:
+                                    attachments.append(await utils.getFileFromAttachment(attachment.url))
+                            
+                            await thread.send(new_msg, files=attachments)
+                            await msg.delete()
+                            limit = limit - 1 if limit != 99 else limit
+                        else:
+                            break
+                    else:
+                        if int(msgInicio) == msg.id:
+                            starter = True
+                
+                canal_limpo = await thread.send("Conversa organizada!")
+                await asyncio.sleep(3)
+                await canal_limpo.delete()
+            except Exception as erro:
+                raise erro
+        
 
 bot.run(str(os.environ["TOKEN"]))

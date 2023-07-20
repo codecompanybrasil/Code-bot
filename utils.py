@@ -1,6 +1,7 @@
 from random import randint
 import discord
 import os
+import requests
 from dotenv import load_dotenv
 import asyncio
 import threading
@@ -87,6 +88,18 @@ class Utils:
             await member.send("Sua solicitação de participar do projeto está sendo avaliada! Em breve o lider de projeto entrará em contato")
         await asyncio.sleep(2)
         await message.remove_reaction(emoji, member)
+        
+    async def getFileFromAttachment(self, attachement):
+        req = requests.get(attachement)
+        
+        if req.status_code == 200:
+            temp = open("temp.png", "wb")
+            temp.write(req.content)
+            
+            binary = open("temp.png", "rb")
+            dFile = discord.File(binary)
+
+            return dFile
 
     async def sendMensagemBoasVindasDm(self, member):
         self.guild = self.pessoa.get_guild(int(os.environ["CODE_COMPANY_ID"]))
